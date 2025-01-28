@@ -11,6 +11,25 @@
 const reponse = await fetch('http://localhost:5678/api/works');
 const listWorks = await reponse.json();
 console.log(listWorks);
+//Création de la liste des catégory pour les filtres
+const listNameCategory = new Set();
+for (let i = 0; i< listWorks.length; i++) {
+    const figure = listWorks[i];
+    listNameCategory.add(figure.category.name);
+}
+const categoryMap = new Map();
+
+for (let figure of listWorks) {
+  const cat = figure.category;
+  // On associe "cat.id" à lID de l'objet cat
+  categoryMap.set(cat.id, cat);
+}
+// Puis on peut récupérer un tableau d'objets uniques :
+const ListUniqueCategory = Array.from(categoryMap.values());
+console.log(ListUniqueCategory);
+console.log(listNameCategory);
+
+
 
 // Fonction de création des fiches de travaux et intégration dans le DOM
 function createWorks(listWorks) {
@@ -25,54 +44,38 @@ function createWorks(listWorks) {
         imgWork.src = figure.imageUrl;
         const figcaption = document.createElement("figcaption");
         figcaption.innerText = figure.title;
-
+    
         // On rattache les travaux a la section gallery
         sectionGallery.appendChild(divWork);
         divWork.appendChild(imgWork);
         divWork.appendChild(figcaption);
-    }
-}
+    };
+};
 
 // Appel de la fonction
 createWorks(listWorks);
 
-// gestion du bouton de tri "Tous"
-const btnTrier = document.querySelector(".btnTrier");
-
-btnTrier.addEventListener("click", function() {
+// gestion des boutons de filtre
+const btnsFiltrer = document.querySelectorAll(".btnFiltre");
+const typeFiltre = "Tous";   // Par défaut, on affiche tous les travaux
+// Ecoute des boutons de filtre                                                                   
+btnsFiltrer.forEach(btn=> {
+    btn.addEventListener("click", function() {
+        const typeFiltre = btn.innerText;
+        console.log(typeFiltre);
+    // Suppression des travaux actuels
     document.querySelector(".gallery").innerHTML = "";
-    createWorks(listWorks);
-});
-
-// gestion du bouton de tri "Objets"
-const btnTrierObjets = document.querySelector(".btnTrierObjets");
-
-btnTrierObjets.addEventListener("click", function() {
-        const listObjets = listWorks.filter(function(figure) {
-            return figure.category.id === 1;
-        });
-        document.querySelector(".gallery").innerHTML = "";
-        createWorks(listObjets);
-});
-
-// gestion du bouton de tri "Appartements"
-const btnTrierAppt = document.querySelector(".btnTrierAppt");
-
-btnTrierAppt.addEventListener("click", function() {
-        const listAppt = listWorks.filter(function(figure) {
-            return figure.category.id === 2;
-        });
-        document.querySelector(".gallery").innerHTML = "";
-        createWorks(listAppt);
-});
-
-// gestion du bouton de tri "Hotels et restaurants"
-const btnTrierHotelsRest = document.querySelector(".btnTrierHotelsRest");
-
-btnTrierHotelsRest.addEventListener("click", function() {
-        const listHoRest = listWorks.filter(function(figure) {
-            return figure.category.id === 3;
-        });
-        document.querySelector(".gallery").innerHTML = "";
-        createWorks(listHoRest);
+    // Affichage des travaux selon le filtre
+    if (typeFiltre === "Tous") {
+        createWorks(listWorks);
+    }  else if (typeFiltre === "Objets") {
+        createWorks(listWorks.filter(figure => figure.category.id === 1));
+    }  else if (typeFiltre === "Appartements") {
+        createWorks(listWorks.filter(figure => figure.category.id === 2));
+    }  else if (typeFiltre === "Hotels & restaurants") {
+        createWorks(listWorks.filter(figure => figure.category.id === 3));
+    }  else {
+        console.log("Erreur de tri, il doit y avir un souci avec votre appel API");
+    }
+    });
 });
