@@ -10,7 +10,7 @@
 // Récupération des works depuis l'API
 const reponse = await fetch('http://localhost:5678/api/works');
 const listWorks = await reponse.json();
-console.log(listWorks);
+
 //Création de la liste des catégory pour les filtres
 const listNameCategory = new Set();
 for (let i = 0; i< listWorks.length; i++) {
@@ -26,9 +26,32 @@ for (let figure of listWorks) {
 }
 // Puis on peut récupérer un tableau d'objets uniques :
 const ListUniqueCategory = Array.from(categoryMap.values());
+
+// Affichage des travaux dans la console
+console.log(listWorks);
 console.log(ListUniqueCategory);
 console.log(listNameCategory);
 
+// Création des boutons de filtres et intégration dans le DOM
+ListUniqueCategory.push({id:0, name: "Tous"});
+console.log(ListUniqueCategory);
+const sectionFilter = document.querySelector(".navFilter");
+const ulCategory = document.createElement("ul");
+sectionFilter.appendChild(ulCategory);
+
+for (let i = 0; i< ListUniqueCategory.length; i++) {
+    const category = ListUniqueCategory[i];
+    const liCategory = document.createElement("li");
+    const buttonCategory = document.createElement("button");
+    buttonCategory.classList.add('btnFiltre');
+    buttonCategory.type = "submit";
+    const nameCategory = document.createElement("span");
+    nameCategory.innerText = category.name;
+    
+    ulCategory.appendChild(liCategory);
+    liCategory.appendChild(buttonCategory);
+    buttonCategory.appendChild(nameCategory);
+}
 
 
 // Fonction de création des fiches de travaux et intégration dans le DOM
