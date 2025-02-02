@@ -34,6 +34,7 @@ console.log(listNameCategory);
 
 // Création des boutons de filtres et intégration dans le DOM
 ListUniqueCategory.push({id:0, name: "Tous"});
+ListUniqueCategory.sort((a, b) => a.id - b.id);
 console.log(ListUniqueCategory);
 const sectionFilter = document.querySelector(".navFilter");
 const ulCategory = document.createElement("ul");
