@@ -145,6 +145,11 @@ nav a {
 	margin-bottom: 0.5em;
 }
 
+.navFilter {
+	flex: 1 1 100%;
+	margin-top: 20px;
+}
+
 .navFilter ul {
 	display: flex;
 	justify-content: center;
@@ -173,9 +178,34 @@ nav a {
 	color: white;
 }
 
+#portfolio {
+	display: flex;
+	flex-wrap: wrap;
+}
+
 #portfolio h2 {
-	text-align: center;
-	margin-bottom: 1em;
+	/*flex: 1 1 80%;*/
+	position: absolute;
+	left: 50%;
+	transform: translateX(-50%); /* Centre le titre par rapport à l'écran */
+	margin: 0;
+}
+
+.editButton {
+	display: flex;
+	flex: 1 1 60% ;	
+	justify-content: center;
+	align-items: center;
+	background-color: transparent;
+	border: none;
+	gap: 10px ;
+	padding-left: 340px;
+	height: 30px;
+	cursor: pointer;
+}
+
+.h2Login {
+	flex: 1 1 80%;
 }
 
 .gallery {

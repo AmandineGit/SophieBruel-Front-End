@@ -7,6 +7,7 @@
  * Version : 1.0
  */
 
+
 // Récupération des works depuis l'API
 const reponse = await fetch('http://localhost:5678/api/works');
 const listWorks = await reponse.json();
@@ -24,18 +25,13 @@ for (let figure of listWorks) {
   // On associe "cat.id" à lID de l'objet cat
   categoryMap.set(cat.id, cat);
 }
+
 // Puis on peut récupérer un tableau d'objets uniques :
 const ListUniqueCategory = Array.from(categoryMap.values());
-
-// Affichage des travaux dans la console
-console.log(listWorks);
-console.log(ListUniqueCategory);
-console.log(listNameCategory);
 
 // Création des boutons de filtres et intégration dans le DOM
 ListUniqueCategory.push({id:0, name: "Tous"});
 ListUniqueCategory.sort((a, b) => a.id - b.id);
-console.log(ListUniqueCategory);
 const sectionFilter = document.querySelector(".navFilter");
 const ulCategory = document.createElement("ul");
 sectionFilter.appendChild(ulCategory);
@@ -73,8 +69,8 @@ function createWorks(listWorks) {
         sectionGallery.appendChild(divWork);
         divWork.appendChild(imgWork);
         divWork.appendChild(figcaption);
-    };
-};
+    }
+}
 
 // Appel de la fonction
 createWorks(listWorks);
@@ -86,7 +82,6 @@ const typeFiltre = "Tous";   // Par défaut, on affiche tous les travaux
 btnsFiltrer.forEach(btn=> {
     btn.addEventListener("click", function() {
         const typeFiltre = btn.innerText;
-        console.log(typeFiltre);
     // Suppression des travaux actuels
     document.querySelector(".gallery").innerHTML = "";
     // Affichage des travaux selon le filtre
@@ -103,3 +98,41 @@ btnsFiltrer.forEach(btn=> {
     }
     });
 });
+
+// Fonction de logout
+function logout() {
+    window.localStorage.removeItem('token');
+    window.location.href = 'http://localhost:8080/login.html';
+}
+
+// Ecoute du bouton logout pour déconnecter l'utilisateur
+document.getElementById('log').addEventListener('click', async (event) => {
+    event.preventDefault();
+    logout();
+});
+
+// Test de l'authentification
+if (window.localStorage.getItem('token') !== null) {
+    console.log('Vous êtes connecté');
+        // Récupération de l'élément du DOM qui accueillera le logout
+        const sectionLog = document.querySelector('#log');
+        // Afficher Logout dans le menu
+        sectionLog.textContent = 'logout';
+        // Modifier l'attribut href
+        sectionLog.setAttribute('href', '#');
+        // Ajout du bouton "modifier" pour les works    
+        const sectionPortfolio = document.querySelector("#portfolio");
+        //creation de la balise qui contiendra le bouton modifier
+        const buttonEdit = document.createElement("button");
+        buttonEdit.innerHTML = '<i class="fa-regular fa-pen-to-square"></i>modifier';
+        buttonEdit.classList.add("editButton");
+        // Insertion du bouton dans le DOM
+        const sectionNavFilter = sectionPortfolio.querySelector('nav');
+        sectionPortfolio.insertBefore(buttonEdit, sectionNavFilter);  
+        // Suppression des filtres
+        sectionNavFilter.innerHTML="";
+
+} else {
+    console.log('Vous n\'êtes pas connecté');
+
+} 
