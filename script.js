@@ -118,15 +118,13 @@ if (window.localStorage.getItem('token') !== null) {
         const sectionLog = document.querySelector('#log');
         // Afficher Logout dans le menu
         sectionLog.textContent = 'logout';
-        // Modifier l'attribut href
         sectionLog.setAttribute('href', '#');
         // Ajout du bouton "modifier" pour les works    
         const sectionPortfolio = document.querySelector("#portfolio");
-        //creation de la balise qui contiendra le bouton modifier
         const buttonEdit = document.createElement("button");
         buttonEdit.innerHTML = '<i class="fa-regular fa-pen-to-square"></i>modifier';
         buttonEdit.classList.add("editButton");
-        // Insertion du bouton dans le DOM
+        buttonEdit.id = "openModalBtn";
         const sectionNavFilter = sectionPortfolio.querySelector('nav');
         sectionPortfolio.insertBefore(buttonEdit, sectionNavFilter);  
         // Suppression des filtres
@@ -135,4 +133,62 @@ if (window.localStorage.getItem('token') !== null) {
 } else {
     console.log('Vous n\'êtes pas connecté');
 
+} 
+
+if (window.localStorage.getItem('token') !== null) {
+    // Gestion dela fenetre modale
+    const modal = document.getElementById("myModal");
+    const openModalBtn = document.getElementById("openModalBtn");
+    const modalOverlay = document.getElementById("myModalOverlay");
+    const closeBtn = document.querySelector(".close");
+
+    // Fonction pour ouvrir la modale
+    function openModal() {
+        modal.style.display = "block";
+        modalOverlay.style.display = "block";
+        openModalGrid(listWorks);
+    }
+
+    // Fonction pour créer le grid de la modale
+    function openModalGrid(listWorks) {
+        // Récupération de l'élément du DOM qui accueillera les travaux
+    const modalGrid = document.querySelector(".modalGrid");
+    modalGrid.innerHTML = "";
+    for (let i = 0; i< listWorks.length; i++) {
+        const worksGrid = listWorks[i];
+                //creation de la balise qui contiendra les img des travaux et l'icon de suppression 
+        const liGrid = document.createElement("li");
+        // Création des balises qui contiendront les images 
+        const imgWork = document.createElement("img");
+        imgWork.src = worksGrid.imageUrl;
+        // Création de l'icone de suppression
+        const btnSuppr = document.createElement("button");  
+        btnSuppr.innerHTML = "<i class='fa-solid fa-trash-can'></i>";
+        btnSuppr.classList.add("btnSuppr");
+            
+        // On rattache les travaux a la section gallery
+        modalGrid.appendChild(liGrid);
+        liGrid.appendChild(imgWork);
+        liGrid.appendChild(btnSuppr);
+        }
+    }
+
+    // Fonction pour fermer la modale
+    function closeModal() {
+        modal.style.display = "none";
+        modalOverlay.style.display = "none";
+    }
+
+    // Écouteurs d'événements pour ouvrir et fermer la modale
+    openModalBtn.addEventListener("click", openModal);
+    closeBtn.addEventListener("click", closeModal);
+
+
+    // Fermer la modale si l'utilisateur clique en dehors de son contenu
+    const overlay = document.querySelector('.modal-overlay'); 
+    window.addEventListener("click", function(event) {
+        if (event.target === overlay) {
+            closeModal();
+        }
+    });
 } 
