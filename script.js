@@ -219,26 +219,112 @@ if (window.localStorage.getItem('token') !== null) {
         titreAdd.innerHTML = "Ajout photo"; 
         const formAdd = document.createElement("form");
         formAdd.id = "formAdd";
-        formAdd.innerHTML = `  
-            <label for="file-input" class="custom-file-label">
-                <i class="fa-regular fa-image"></i>
-                <div id="AddPict">+ Ajouter photo</div>
-                <span>jpg, png : 4 Mo max</span>
-            </label>
-            <input type="file" id="file-input"  required>
-            <label for="title">Titre</label>
-            <input type="text" id="title" name="title" required>
-            <label for="category">Catégorie</label>
-            <select id="category" name="category" required>
-                <option value="" selected></option> <!-- Option sans texte -->
-                <option value="1">Objets</option>
-                <option value="2">Appartements</option>
-                <option value="3">Hotels & restaurants</option>     
-            </select>
-            <div class="ligne"></div>
-            <button type="submit" class="btnAdd">Ajouter</button>
-        `;
+		
+		//création du bouton ajouter photo
+		const label1 = document.createElement("label");
+		label1.classList.add("custom-file-label");
+		label1.setAttribute('for', 'file-input');
+		const icone = document.createElement("i");
+		icone.classList.add("fa-regular", "fa-image");
+		const div = document.createElement("div");
+		div.id = "AddPict";
+		div.innerText = "+ Ajouter photo";
+		const span = document.createElement("span");
+		span.innerText = "jpg, png : 4 Mo max";
+		label1.appendChild(icone);
+		label1.appendChild(div);
+		label1.appendChild(span);
+		formAdd.appendChild(label1);
+		
+		const inputPict = document.createElement("input");
+		inputPict.type = "file";
+		inputPict.id = "file-input";
+		formAdd.appendChild(inputPict);
+		
+		
+		// Création du reste du form avec le titre et le type de travail
+		const label2 = document.createElement("label");
+		label2.setAttribute('for','title');
+		label2.innerText = "Titre";
+		const inputTitle = document.createElement("input");
+		inputTitle.type = "text";
+		inputTitle.id = "title";
+		inputTitle.name = "title";
+		inputTitle.required = true;
+		formAdd.appendChild(label2);
+		formAdd.appendChild(inputTitle);
+		
+		const label3 = document.createElement("label");
+		label3.setAttribute('for','category');
+		label3.innerText = "Catégorie";
+		const selectForm = document.createElement("select");
+		selectForm.id = "category";
+		selectForm.name = "category";
+		selectForm.required = true;
+		const option1 = document.createElement("option");
+		option1.value = "";
+		option1.selected = true;
+		const option2 = document.createElement("option");
+		option2.value = "1";
+		option2.innerText = "Objets";
+		const option3 = document.createElement("option");
+		option3.value = "2";
+		option3.innerText = "Appartements";
+		const option4 = document.createElement("option");
+		option4.value = "3";
+		option4.innerText = "Hotels & restaurants";
+        formAdd.appendChild(label3);
+		selectForm.appendChild(option1);
+		selectForm.appendChild(option2);
+		selectForm.appendChild(option3);
+		selectForm.appendChild(option4);
+		formAdd.appendChild(selectForm);
+		
+		//création de la ligne de séparation et du bouton submit
+		const divLigne = document.createElement("div");
+		divLigne.classList.add("ligne");
+		const btnSubmit = document.createElement("button");
+		btnSubmit.type = "submit";
+		btnSubmit.classList.add("btnAdd");
+		btnSubmit.innerText = "Ajouter";
+		formAdd.appendChild(divLigne);
+		formAdd.appendChild(btnSubmit);
+
         modalBody.appendChild(formAdd);
+        
+        // Ecouteur d'événement pour le formulaire d'ajout
+        formAdd.addEventListener('submit', function(e) {
+            e.preventDefault(); // Empêche l'envoi classique du formulaire
+
+            // Création d'un objet FormData
+            const formData = new FormData();
+
+            // Récupération des valeurs
+            const fileInput = document.getElementById('file-input').files[0];
+
+            // Gestion de l'erreur si aucun fichier n'est sélectionné
+            if (!fileInput) {
+                const fileInput = document.getElementById('file-input');
+                const errorFile = document.createElement('div');
+                errorFile.id = 'below-file-input';
+                errorFile.innerHTML = "Veuillez sélectionner un fichier";
+                fileInput.insertAdjacentElement('afterend', errorFile);
+                console.error ("Aucun fichier sélectionné");
+            } 
+
+            const title = document.getElementById('title').value;
+            const category = document.getElementById('category').value;
+
+            // Ajout des données dans le FormData
+            formData.append('image', fileInput);
+            formData.append('title', title);
+            formData.append('category', category);
+
+            // Si vous voulez voir les données dans la console
+            console.log('Fichier:', fileInput);
+            console.log('Titre:', title);
+            console.log('Catégorie:', category);
+        }); 
     }
 
     // Fonction pour fermer la modale
@@ -285,6 +371,7 @@ if (window.localStorage.getItem('token') !== null) {
         const buttonAdd = document.querySelector('.btnAdd'); 
         buttonAdd.addEventListener("click", openFormAdd);
     });
+
 
     closeModalBtn.addEventListener("click", closeModal);
 

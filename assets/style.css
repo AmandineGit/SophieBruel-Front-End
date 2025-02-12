@@ -407,7 +407,19 @@ nav a {
 	height: 160px;
 	border-radius: 2px;
 	background-color: #e8f1f6 ;
-	display: none;
+	opacity: 0;
+  	position: absolute;
+  	left: -9999px; /* Ou une autre méthode pour le sortir de la vue */
+}
+
+#below-file-input {
+	display: flex;
+	justify-content: flex-end;
+	width: 100%;
+	align-items: center ;
+	color: red;
+	margin-top: 10px;
+	font-size: 14px;
 }
 
 .modal-content form select {
