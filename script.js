@@ -134,41 +134,42 @@ if (window.localStorage.getItem('token') !== null) {
     console.log('Vous n\'êtes pas connecté');
 
 } 
+//************************Interface users authentifiés**************************************************************
 
 if (window.localStorage.getItem('token') !== null) {
-    // Gestion de la fenetre modale
-    const modal = document.getElementById("myModal");
-    const openModalBtn = document.getElementById("openModalBtn");
-    const modalOverlay = document.getElementById("myModalOverlay");
-    const closeBtn = document.querySelector(".close");
-    
-    // Récupération de l'élément du DOM qui accueillera les travaux
-    const modalGrid = document.querySelector(".modalGrid");
-    modalGrid.innerHTML = "";
+    //*************Gestion de la fenetre modale*****************//
+
+    // ************Fonctions des pages modales************
     
     // Fonction pour ouvrir la modale
     function openModal() {
         modal.style.display = "block";
         modalOverlay.style.display = "block";
-        openModalGrid(listWorks);
-        // Ecouteurs d'événements pour supprimer les travaux
-        const buttons = document.querySelectorAll('.btnSuppr'); 
-        const arrayButtons = Array.from(buttons);
-        arrayButtons.forEach(button => {
-            button.addEventListener('click', async function(event) {
-                const icon = button.querySelector('i'); // Sélectionne l'icône à l’intérieur du bouton
-                const id = icon.getAttribute('data-id');
-                await deleteWork(id);
-            });
-        });
-        // Ecouteurs d'événements pour ajouter les travaux
-        const buttonAdd = document.querySelector('.btnAdd'); 
-        buttonAdd.addEventListener("click", openFormAdd);
     }
 
-    // Fonction pour créer le grid de la modale
-    function openModalGrid(listWorks) {   
-        modalGrid.innerHTML = "";     
+    //Fonction pour crée le corps de la modale
+    function openModalBody() {
+        modalBody.innerHTML = "";
+        // Création de la ligne de séparation
+        const ligne = document.createElement("div");
+        ligne.id= "ligne";
+        ligne.classList.add("ligne");
+        // Création du bouton pour ajouter une photo
+        const btnAdd = document.createElement("button");
+        btnAdd.classList.add("btnAdd");
+        btnAdd.innerHTML = "Ajouter une photo";
+
+        // On rattache les travaux a la section modalBody
+        modalBody.appendChild(ligne);
+        modalBody.appendChild(btnAdd);
+    }
+
+    // Fonction pour créer le grid et les btn suppr et modifier le titre  de la page modal 1
+    function openModalGrid(listWorks) {
+        const titreAdd = document.querySelector('.modal-content h3');  
+        titreAdd.innerHTML = "Galerie photo";    
+        const modalGrid = document.createElement("ul");
+        modalGrid.classList.add("modalGrid");     
     for (let i = 0; i< listWorks.length; i++) {
         const worksGrid = listWorks[i];
         //creation de la balise qui contiendra les img des travaux et l'icon de suppression 
@@ -182,8 +183,9 @@ if (window.localStorage.getItem('token') !== null) {
         const btnSuppr = document.createElement("button");  
         btnSuppr.innerHTML = `<i class='fa-solid fa-trash-can' data-id='${worksGrid.id}'></i>`;
         btnSuppr.classList.add("btnSuppr");
-            
-        // On rattache les travaux a la section gallery
+
+        // On rattache les travaux a la section modalGrid puis au modalBody
+        modalBody.prepend(modalGrid);
         modalGrid.appendChild(liGrid);
         liGrid.appendChild(imgWork);
         liGrid.appendChild(btnSuppr);
@@ -208,41 +210,83 @@ if (window.localStorage.getItem('token') !== null) {
               }
             })
             .catch(error => console.error('Erreur réseau :', error));
-        openModalGrid(listWorks);
     }
 
-    // Fonction pour lancer le form Ajouter une photo
+    // Fonction pour créer le form et modifier le titre de la page modale 2
     function openFormAdd() {  
-        const titreBtnAdd = document.querySelector('.modal-content h3');  
-        titreBtnAdd.innerHTML = "Ajouter une photo";    
-        modalGrid.innerHTML = "";
+        modalBody.innerHTML = "";
+        const titreAdd = document.querySelector('.modal-content h3');  
+        titreAdd.innerHTML = "Ajout photo"; 
         const formAdd = document.createElement("form");
         formAdd.id = "formAdd";
-        formAdd.innerHTML = `       
-            <label for="imageUrl">URL de l'image</label>
-            <input type="url" id="imageUrl" name="imageUrl" required>
+        formAdd.innerHTML = `  
+            <label for="file-input" class="custom-file-label">
+                <i class="fa-regular fa-image"></i>
+                <div id="AddPict">+ Ajouter photo</div>
+                <span>jpg, png : 4 Mo max</span>
+            </label>
+            <input type="file" id="file-input"  required>
             <label for="title">Titre</label>
             <input type="text" id="title" name="title" required>
             <label for="category">Catégorie</label>
             <select id="category" name="category" required>
+                <option value="" selected></option> <!-- Option sans texte -->
                 <option value="1">Objets</option>
                 <option value="2">Appartements</option>
                 <option value="3">Hotels & restaurants</option>     
             </select>
-            <button type="submit">Ajouter</button>
+            <div class="ligne"></div>
+            <button type="submit" class="btnAdd">Ajouter</button>
         `;
-        modalGrid.appendChild(formAdd);
+        modalBody.appendChild(formAdd);
     }
 
     // Fonction pour fermer la modale
+
     function closeModal() {
         modal.style.display = "none";
         modalOverlay.style.display = "none";
+        modalBody.innerHTML = "";
     }
 
-    // Écouteurs d'événements pour ouvrir et fermer la modale
-    openModalBtn.addEventListener("click", openModal);
-    closeBtn.addEventListener("click", closeModal);
+    // Récupération du DOM pour la modale
+    const modal = document.getElementById("myModal");
+    const modalContent = document.querySelector(".modal-content");
+    const openModalBtn = document.getElementById("openModalBtn");
+    const modalOverlay = document.getElementById("myModalOverlay");
+    const closeModalBtn = document.querySelector(".close");
+    const modalBody = document.querySelector(".modalBody");
+    
+    // ************Début du code executable************
+    // Vidange du grid DOM qui accueillera les travaux
+    modalBody.innerHTML = "";
+
+    // ************Écouteurs d'événements des pages modales************
+
+    // Écouteurs d'événements pour ouvrir la modale
+    openModalBtn.addEventListener("click", async function() {
+        openModal();
+        openModalBody();
+        openModalGrid(listWorks);
+        // Ecouteurs d'événements pour supprimer les travaux
+        const buttons = document.querySelectorAll('.btnSuppr'); 
+        const arrayButtons = Array.from(buttons);
+        arrayButtons.forEach(button => {
+            button.addEventListener('click', async function(event) {
+                const icon = button.querySelector('i'); 
+                const id = icon.getAttribute('data-id');
+                await deleteWork(id)
+                const reponse = await fetch('http://localhost:5678/api/works');
+                const listWorks = await reponse.json();
+                openModalGrid(listWorks);
+            });
+        });
+        // Ecouteurs d'événements pour ajouter les travaux
+        const buttonAdd = document.querySelector('.btnAdd'); 
+        buttonAdd.addEventListener("click", openFormAdd);
+    });
+
+    closeModalBtn.addEventListener("click", closeModal);
 
     // Fermer la modale si l'utilisateur clique en dehors de son contenu
     const overlay = document.querySelector('.modal-overlay'); 

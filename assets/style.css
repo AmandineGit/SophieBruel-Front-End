@@ -232,7 +232,7 @@ nav a {
 	background: rgba(0, 0, 0, 0.5); /* Fond gris translucide */
 }
 
-/* Style de la modale */
+/*********** Style de la modale ***********************/
 .modal {
 	position: fixed;
 	display: none;
@@ -247,6 +247,7 @@ nav a {
 }
 
 /* Contenu de la modale */
+/* Page de suppr de travaux modal*/
 .modal-content {
 	display: flex;
 	font-size: 26px;
@@ -256,12 +257,29 @@ nav a {
 	margin: 30px 0 ;
 }
 
+.ligne {
+	margin: 10px;
+	height: 1px ;
+	background-color: gray;
+	width: 100%;
+	margin-bottom: 15px;
+}
+
+.modalBody	{
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	width: 70%;
+}
+
 .modalGrid {
 	display: grid;
 	grid-template-columns: repeat(5, 1fr);
 	row-gap: 20px ;
 	column-gap: 10px ;
 	margin: 60px 0 ;
+	justify-items: center;
 }
 
 .modalGrid li {
@@ -302,10 +320,105 @@ nav a {
 	border: none ;
 	background-color: #1D6154;
 	padding: 10px 40px; 
-	margin-top: 40px ;
-	text-align: center;
+	margin-top: 20px ;
 	border-radius: 60px ;
 	cursor: pointer;
+}
+
+/* Page de Ajout de travaux modal*/
+
+.modal-content form {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	width: 100% ;
+	margin: 40px ;
+}
+
+.modal-content form label:not(:first-child) {
+	display: block; /* Pour s'assurer que le label occupe toute la largeur */
+	width: 100%;
+	text-align: left;
+	font-size: 16px;
+    font-weight: bold;
+	color: gray;
+	padding: 20px;
+}
+
+.modal-content form select {
+	margin-bottom: 30px;
+}
+
+.modal-content form input {
+	width: 100%;
+	height: 40px;
+	font-size: 0.8em;
+	color: gray;
+	font-weight: normal;
+	border: none;
+	box-shadow: 2px 2px 14px rgb(209, 206, 206);
+}
+
+.custom-file-label {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	padding: 10px;
+	background-color: #e8f1f6 ;	
+	border: none;
+	border-radius: 2px;
+	width: 100%;
+	gap: 10px;
+}
+
+.custom-file-label span {
+	font-size: 10px;	
+	color: #444444;
+	padding: 10px;
+}
+
+#AddPict {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-color: #b9c5cc;
+	border: none;
+	border-radius: 20px;
+	padding: 0;
+	margin: 0;
+	cursor: pointer;
+	font-size: 16px;
+	height: 36px;
+	width: 173px;
+	font-family: inherit;
+	font-weight:bold;
+	color:#3a6d8a;
+}
+
+.custom-file-label i {
+	font-size: 76px;
+	color:#b9c5cc;
+	padding: 10px;
+}
+
+#file-input {
+	height: 160px;
+	border-radius: 2px;
+	background-color: #e8f1f6 ;
+	display: none;
+}
+
+.modal-content form select {
+	width: 100%;
+	height: 40px;
+	font-weight: normal;
+	color: gray;
+	background-color: white;
+	font-size: 0.6em;
+	border: none;
+	box-shadow: 2px 2px 14px rgb(209, 206, 206);
 }
 
 /* Bouton de fermeture modal*/
@@ -327,7 +440,7 @@ nav a {
     cursor: pointer;
 }
 
-/*Stype de Contact*/
+/************Stype de Contact********************/
 #contact {
 	width: 50%;
 margin: auto;
@@ -371,7 +484,7 @@ input[type="submit"]{
 	border-radius: 60px ;
 }
 
-/* Style footer */
+/******************Style footer **************************/
 footer {
 	display: flex;
 	justify-content: flex-end;
