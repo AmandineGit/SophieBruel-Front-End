@@ -107,7 +107,7 @@ for (let i = 0; i< listWorks.length; i++) {
 //fonction pour supprimer un work par son ID
 async function deleteWork(id) {
     const token = window.localStorage.getItem('token');
-    await fetch(`http://localhost:5678/api/works/${id}`, {
+    await fetch(hostBack + `/api/works/${id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -177,13 +177,13 @@ function openFormAdd() {
     option1.value = "";
     option1.selected = true;
     const option2 = document.createElement("option");
-    option2.value = "1";
+    option2.value = 1;
     option2.innerText = "Objets";
     const option3 = document.createElement("option");
-    option3.value = "2";
+    option3.value = 2;
     option3.innerText = "Appartements";
     const option4 = document.createElement("option");
-    option4.value = "3";
+    option4.value = 3;
     option4.innerText = "Hotels & restaurants";
     formAdd.appendChild(label3);
     selectForm.appendChild(option1);
@@ -207,11 +207,39 @@ function openFormAdd() {
     modalBody.appendChild(formAdd);
 
 }
+
+// Fonction pour envoyer un nouveau work sur l'api
+async function sendWork(data) {  
+    const token = window.localStorage.getItem('token');
+    try {
+        const reponse = await fetch(hostBack + `/api/works`, {
+        method: 'POST',
+        body: data,
+        headers: {
+          'Authorization': `Bearer ${token}` // Ajout du token dans les headers
+        }
+        });
+        
+        if (reponse.ok) {
+            console.log(`L'élément a été créé.`);
+        } else {
+            const errorResponse = await response.json();  // Si l'API retourne un message d'erreur
+            console.error(`Erreur lors de la création : ${reponse.status} - ${errorResponse.message}`);
+          }
+    } catch (error) {
+        console.error('Erreur réseau :', error);
+    }
+}
+
 // Fonction pour fermer la modale
-function closeModal() {
+async function closeModal() {
     modal.style.display = "none";
     modalOverlay.style.display = "none";
-    modalBody.innerHTML = "";
+    modalBody.innerHTML = "";                
+    const sectionGallery = document.querySelector(".gallery");
+    sectionGallery.innerHTML = "";
+    listWorks = await fetchWorks();
+    createWorks(listWorks);
 }
 
 
@@ -349,10 +377,13 @@ if (window.localStorage.getItem('token') !== null) {
             button.addEventListener('click', async function(event) {
                 const icon = button.querySelector('i'); 
                 const id = icon.getAttribute('data-id');
-                await deleteWork(id)
-                const reponse = await fetch(hostBack + '/api/works');
-                const listWorks = await reponse.json();
-                openModalGrid(listWorks);
+                await deleteWork(id);
+                console.log("retour execute deleteWork");
+                modalBody.innerHTML = "";
+                const newListWorks = await fetchWorks();
+                console.log("retour execute fetchWorks  ", newListWorks);
+                openModalBody();
+                openModalGrid(newListWorks);
             });
         });
     });
@@ -366,7 +397,7 @@ if (window.localStorage.getItem('token') !== null) {
 
     // Ecouteur d'événement pour le formulaire d'ajout
 
-    document.body.addEventListener("click", function(event) {
+    document.body.addEventListener("click", async function(event) {
         if (event.target && event.target.id === "btnCreateWork") {     
             event.preventDefault(); // Empêche l'envoi classique du formulaire
     
@@ -389,9 +420,9 @@ if (window.localStorage.getItem('token') !== null) {
             } 
     
             const title = document.getElementById('title').value;
-            const category = document.getElementById('category').value;
-    
-            // Ajout des données dans le FormData
+            let category = document.getElementById('category').value;
+            category = Number(category);
+            // Ajout des données dans le formData
             formData.append('image', fileInput);
             formData.append('title', title);
             formData.append('category', category);
@@ -399,11 +430,22 @@ if (window.localStorage.getItem('token') !== null) {
             // Si vous voulez voir les données dans la console
             console.log('Fichier:', fileInput);
             console.log('Titre:', title);
-            console.log('Catégorie:', category);  
+            console.log('Catégorie:', category); 
+            
+            // Envoi des données à l'API
+            console.log("formData", formData);
+            sendWork(formData);
+
+            //Affichage d'un message d econfirmation
+            const ligne = document.querySelector('.ligne');
+            const messConfirm = document.createElement('div');
+            messConfirm.id = 'below-file-input';
+            messConfirm.innerHTML = "Votre projet a été ajouté";
+            ligne.insertAdjacentElement('afterend', messConfirm);
         }
     });
 
-    document.body.addEventListener("click", function(event) {
+    document.body.addEventListener("click", async function(event) {
         if (event.target && event.target.classList.contains("close")) { 
             closeModal();
             }
@@ -411,7 +453,7 @@ if (window.localStorage.getItem('token') !== null) {
 
     // Fermer la modale si l'utilisateur clique en dehors de son contenu
     const overlay = document.querySelector('.modal-overlay'); 
-    window.addEventListener("click", function(event) {
+    window.addEventListener("click", async function(event) {
         if (event.target === overlay) {
             closeModal();
         }
