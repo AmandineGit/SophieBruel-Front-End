@@ -46,8 +46,8 @@ function createWorks(listWorks) {
 
 // Fonction de logout
 function logout() {
-    window.localStorage.removeItem('token');
-    window.location.href = 'http://localhost:8080/login.html';
+    window.sessionStorage.removeItem('token');
+    windows.location.href = 'http://localhost:8080/login.html';
 }
 
 // ************Fonctions des pages modales************************************/
@@ -106,7 +106,7 @@ for (let i = 0; i< listWorks.length; i++) {
 
 //fonction pour supprimer un work par son ID
 async function deleteWork(id) {
-    const token = window.localStorage.getItem('token');
+    const token = window.sessionStorage.getItem('token');
     await fetch(hostBack + `/api/works/${id}`, {
         method: 'DELETE',
         headers: {
@@ -152,6 +152,21 @@ function openFormAdd() {
     inputPict.type = "file";
     inputPict.id = "file-input";
     formAdd.appendChild(inputPict);
+
+    //Ecouteur d'événement pour le bouton fileInput
+    inputPict.addEventListener("change", function(event) {
+        const customFileLabel = document.querySelector(".custom-file-label");
+        customFileLabel.innerText = "";
+        const customFileLabelIcone = document.createElement("i");
+        customFileLabelIcone.classList.add("fa-solid", "fa-file");
+        const customeFileLabelSpan = document.createElement("span");
+        const nameFileInput = document.getElementById('file-input').files[0].name;
+        customeFileLabelSpan.innerText = nameFileInput ;
+        customFileLabel.appendChild(customFileLabelIcone);
+        customFileLabel.appendChild(customeFileLabelSpan);
+        const idFileInput = document.getElementById('btnCreateWorkInactif');
+        idFileInput.id = "btnCreateWork";
+    });
     
     
     // Création du reste du form avec le titre et le type de travail
@@ -198,9 +213,9 @@ function openFormAdd() {
     const btnSubmit = document.createElement("button");
     btnSubmit.type = "submit";
     btnSubmit.type = "submit";
-    btnSubmit.id = "btnCreateWork";
+    btnSubmit.id = "btnCreateWorkInactif";
     btnSubmit.classList.add("btnAdd");
-    btnSubmit.innerText = "Ajouter";
+    btnSubmit.innerText = "Valider";
     formAdd.appendChild(divLigne);
     formAdd.appendChild(btnSubmit);
 
@@ -210,7 +225,7 @@ function openFormAdd() {
 
 // Fonction pour envoyer un nouveau work sur l'api
 async function sendWork(data) {  
-    const token = window.localStorage.getItem('token');
+    const token = window.sessionStorage.getItem('token');
     try {
         const reponse = await fetch(hostBack + `/api/works`, {
         method: 'POST',
@@ -222,12 +237,16 @@ async function sendWork(data) {
         
         if (reponse.ok) {
             console.log(`L'élément a été créé.`);
+            //* Attendre 500ms pour assurer que la réponse est bien traitée
+            setTimeout(() => {
+                location.reload();
+            }, 500);
         } else {
             const errorResponse = await response.json();  // Si l'API retourne un message d'erreur
-            console.error(`Erreur lors de la création : ${reponse.status} - ${errorResponse.message}`);
+            console.error(`❌ Erreur lors de l'upload : ${reponse.status} - ${errorResponse.message}`);
           }
     } catch (error) {
-        console.error('Erreur réseau :', error);
+        console.error('❌ Erreur réseau :', error);
     }
 }
 
@@ -281,6 +300,11 @@ for (let i = 0; i< ListUniqueCategory.length; i++) {
     buttonCategory.type = "submit";
     const nameCategory = document.createElement("span");
     nameCategory.innerText = category.name;
+
+    //* Définition du bouton "Tous" comme "active" par défaut
+    if (nameCategory.textContent === "Tous") {
+        buttonCategory.classList.add("active");
+    };
     
     ulCategory.appendChild(liCategory);
     liCategory.appendChild(buttonCategory);
@@ -297,21 +321,25 @@ const typeFiltre = "Tous";   // Par défaut, on affiche tous les travaux
 // Ecoute des boutons de filtre                                                                   
 btnsFiltrer.forEach(btn=> {
     btn.addEventListener("click", function() {
+        // Supprime la classe active de tous les boutons
+        btnsFiltrer.forEach(btn => btn.classList.remove("active"));
+        // Ajoute la classe active au bouton cliqué
+        btn.classList.add("active");
         const typeFiltre = btn.innerText;
-    // Suppression des travaux actuels
-    document.querySelector(".gallery").innerHTML = "";
-    // Affichage des travaux selon le filtre
-    if (typeFiltre === "Tous") {
-        createWorks(listWorks);
-    }  else if (typeFiltre === "Objets") {
-        createWorks(listWorks.filter(figure => figure.category.id === 1));
-    }  else if (typeFiltre === "Appartements") {
-        createWorks(listWorks.filter(figure => figure.category.id === 2));
-    }  else if (typeFiltre === "Hotels & restaurants") {
-        createWorks(listWorks.filter(figure => figure.category.id === 3));
-    }  else {
-        console.log("Erreur de tri, il doit y avir un souci avec votre appel API");
-    }
+        // Suppression des travaux actuels
+        document.querySelector(".gallery").innerHTML = "";
+        // Affichage des travaux selon le filtre
+        if (typeFiltre === "Tous") {
+            createWorks(listWorks);
+        }  else if (typeFiltre === "Objets") {
+            createWorks(listWorks.filter(figure => figure.category.id === 1));
+        }  else if (typeFiltre === "Appartements") {
+            createWorks(listWorks.filter(figure => figure.category.id === 2));
+        }  else if (typeFiltre === "Hotels & restaurants") {
+            createWorks(listWorks.filter(figure => figure.category.id === 3));
+        }  else {
+            console.log("Erreur de tri, il doit y avir un souci avec votre appel API");
+        }
     });
 });
 
@@ -322,7 +350,7 @@ document.getElementById('log').addEventListener('click', async (event) => {
 });
 
 // Test de l'authentification
-if (window.localStorage.getItem('token') !== null) {
+if (window.sessionStorage.getItem('token') !== null) {
     console.log('Vous êtes connecté');
         // Récupération de l'élément du DOM qui accueillera le logout
         const sectionLog = document.querySelector('#log');
@@ -360,7 +388,7 @@ modalBody.innerHTML = "";
 
 //************************Interface users authentifiés**************************************************************
 
-if (window.localStorage.getItem('token') !== null) { 
+if (window.sessionStorage.getItem('token') !== null) { 
 
     // ************Écouteurs d'événements des pages modales************
 
@@ -378,29 +406,27 @@ if (window.localStorage.getItem('token') !== null) {
                 const icon = button.querySelector('i'); 
                 const id = icon.getAttribute('data-id');
                 await deleteWork(id);
-                console.log("retour execute deleteWork");
                 modalBody.innerHTML = "";
                 const newListWorks = await fetchWorks();
-                console.log("retour execute fetchWorks  ", newListWorks);
                 openModalBody();
                 openModalGrid(newListWorks);
             });
         });
     });
 
-    // Ecouteurs d'événements pour ajouter les travaux
+    // Ecouteurs d'événements pour ajouter les travaux sur la page modale 1
     document.body.addEventListener("click", function(event) {
         if (event.target && event.target.id === "btnAddWork") {
             openFormAdd();
         }
     });
 
-    // Ecouteur d'événement pour le formulaire d'ajout
+    // Ecouteur d'événement pour le formulaire d'ajout sur la page modale 2
 
     document.body.addEventListener("click", async function(event) {
         if (event.target && event.target.id === "btnCreateWork") {     
             event.preventDefault(); // Empêche l'envoi classique du formulaire
-    
+
             // Création d'un objet FormData
             const formData = new FormData();
     
@@ -426,22 +452,9 @@ if (window.localStorage.getItem('token') !== null) {
             formData.append('image', fileInput);
             formData.append('title', title);
             formData.append('category', category);
-    
-            // Si vous voulez voir les données dans la console
-            console.log('Fichier:', fileInput);
-            console.log('Titre:', title);
-            console.log('Catégorie:', category); 
             
             // Envoi des données à l'API
-            console.log("formData", formData);
             sendWork(formData);
-
-            //Affichage d'un message d econfirmation
-            const ligne = document.querySelector('.ligne');
-            const messConfirm = document.createElement('div');
-            messConfirm.id = 'below-file-input';
-            messConfirm.innerHTML = "Votre projet a été ajouté";
-            ligne.insertAdjacentElement('afterend', messConfirm);
         }
     });
 
